@@ -5,7 +5,7 @@ process.env.DB_DSN =
 const server = require("../server");
 const User = require("../users/User");
 const userRepository = require("../users/userMongoRepository");
-const bcrypt = require("bcryptjs");
+const testHelpers = require('../users/testHelpers')
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const expect = chai.expect;
@@ -17,9 +17,8 @@ describe("Auth", () => {
   });
 
   before(done => {
-    createUser("testuser", "user@test.com", "testpass")
+    testHelpers.createUser("testuser", "user@test.com", "testpass")
       .save()
-      .then(user => (testUser = user))
       .then(() => done());
   });
 
@@ -101,11 +100,3 @@ describe("Auth", () => {
     })
   });
 });
-
-function createUser(username, email, password) {
-  return new User({
-    username: username,
-    email: email,
-    password: bcrypt.hashSync(password, bcrypt.genSaltSync(10))
-  });
-}
