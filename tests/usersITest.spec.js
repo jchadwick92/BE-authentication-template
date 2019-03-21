@@ -2,10 +2,10 @@ process.env.PORT = 5005;
 process.env.DB_DSN =
   "mongodb://test_user:test123@ds233763.mlab.com:33763/mathlab_test";
 
-const server = require("../../server");
-const testHelpers = require("../../users/testHelpers");
-const User = require("../../users/User");
-const userRespository = require("../../users/userMongoRepository");
+const server = require("../server");
+const testHelpers = require("./testHelpers");
+const User = require("../users/User");
+const userRespository = require("../users/userMongoRepository");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const expect = chai.expect;
