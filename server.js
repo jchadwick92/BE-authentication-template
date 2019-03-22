@@ -26,8 +26,12 @@ app.use('/api/auth', auth);
 
 // authenticate all routes
 app.use(passport.authenticate('jwt', {session: false}))
-const users = require('./admin/users/usersController');
-app.use('/api/admin/users', users)
+
+const users = require('./users/usersController');
+app.use('/api/users', users);
+
+const adminUsers = require('./admin/users/usersController');
+app.use('/api/admin/users', adminUsers);
 
 const port = process.env.PORT || 5001;
 app.listen(port, () => console.log(`Listening on port ${port}`));

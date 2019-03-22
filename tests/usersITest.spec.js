@@ -5,52 +5,53 @@ process.env.DB_DSN =
 const server = require("../server");
 const testHelpers = require("./testHelpers");
 const User = require("../users/User");
-const userRespository = require("../users/userMongoRepository");
+const bcrypt = require("bcryptjs");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe("Users", () => {
-  let testAdminUser;
+  let testUser;
   let token;
 
   before(done => {
-    User.remove({}, done);
+    User.deleteMany({}, done);
   });
 
   before(done => {
     testHelpers
-      .createAdminUser("testAdminUser", "useradmin@test.com", "testpass")
+      .createUser("testUser", "user@test.com", "testpass")
       .save((err, user) => {
         chai
           .request(server)
           .post("/api/auth/login")
-          .send({ email: "useradmin@test.com", password: "testpass" })
+          .send({ email: "user@test.com", password: "testpass" })
           .end((err, res) => {
-            testAdminUser = user;
+            testUser = user;
             token = res.body.token;
             done();
           });
       });
   });
 
-  describe("admin/users", () => {
-    it("should return a list of all users", done => {
+  describe("GET users/me", () => {
+    it("should return a 200 and the logged in user", done => {
       chai
         .request(server)
-        .get("/api/admin/users")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
+          expect(res.body.username).to.equal("testUser");
           done();
         });
     });
 
-    it("should return 403 if user is not logged in", done => {
+    it("should return a 401 if user is not logged in", done => {
       chai
         .request(server)
-        .get("/api/admin/users")
+        .get("/api/users/me")
         .end((err, res) => {
           expect(res.status).to.equal(401);
           done();
@@ -58,49 +59,60 @@ describe("Users", () => {
     });
   });
 
-  describe("GET admin/users/:id", () => {
-    it("should return one user", done => {
-      chai
-        .request(server)
-        .get(`/api/admin/users/${testAdminUser.id}`)
-        .set("Authorization", `Bearer ${token}`)
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          expect(res.body.email).to.equal(testAdminUser.email);
-          done();
-        });
-    });
+  describe("PUT users/me", () => {
+    let testUpdate;
+    let tokenUpdate;
 
-    it("should return 401 when user is not found", done => {
-      chai
-        .request(server)
-        .get(`/api/admin/users/5c91f9c03a85103ede84ac53`)
-        .set("Authorization", `Bearer ${token}`)
-        .end((err, res) => {
-          expect(res.status).to.equal(401);
-          done();
-        });
-    });
-  });
-
-  describe("DELETE admin/users/:id", () => {
-    it("should delete a user", done => {
+    beforeEach(done => {
       testHelpers
-        .createUser("userToDelete", "delete@user.com", "testdelete")
-        .save()
-        .then(user => {
+        .createUser("testUpdate", "user@update.com", "testupdate")
+        .save((err, user) => {
           chai
             .request(server)
-            .delete(`/api/admin/users/${user.id}`)
-            .set("Authorization", `Bearer ${token}`)
+            .post("/api/auth/login")
+            .send({ email: "user@update.com", password: "testupdate" })
             .end((err, res) => {
-              expect(res.status).to.equal(204);
-              userRespository.findById(user.id).then(response => {
-                expect(response).to.be.null;
-                done();
-              });
+              testUpdate = user;
+              tokenUpdate = res.body.token;
+              done();
             });
         });
     });
+
+    afterEach(done => {
+      User.deleteOne({ _id: testUpdate._id }, done);
+    });
+
+    it("should return a 200 and update the user's password", done => {
+      chai
+        .request(server)
+        .put("/api/users/me")
+        .set("Authorization", `Bearer ${tokenUpdate}`)
+        .send({ password: "updatedpassword" })
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          User.findById(testUpdate.id).then(user => {
+            expect(user.email).to.equal("user@update.com");
+            expect(bcrypt.compareSync("updatedpassword", user.password)).to.be.true;
+            done()
+          })
+        });
+    });
+
+    it("should return a 200 and update the user's email and username", done => {
+      chai
+      .request(server)
+      .put("/api/users/me")
+      .set("Authorization", `Bearer ${tokenUpdate}`)
+      .send({ email: "updated@email.com", username: "updatedusername" })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        User.findById(testUpdate.id).then(user => {
+          expect(user.email).to.equal("updated@email.com");
+          expect(user.username).to.equal("updatedusername");
+        })
+        done()
+      })
+    })
   });
 });

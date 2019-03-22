@@ -8,7 +8,7 @@ module.exports = {
   findById: (req, res) => {
     userRepository.findById(req.params.id).then(user => {
         if (!user) {
-            return res.status(401).json("No user found");
+            return res.status(404).json("No user found");
           }
         return res.json(user)
     })
@@ -18,7 +18,7 @@ module.exports = {
   delete: (req, res) => {
     userRepository.findById(req.params.id).then(user => {
       if (!user) {
-        return res.status(401).json("No user found");
+        return res.status(404).json("No user found");
       }
       userRepository
         .deleteById(req.params.id)

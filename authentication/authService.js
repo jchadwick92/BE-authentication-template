@@ -14,12 +14,12 @@ module.exports = {
         userRepository.findByEmail(req.body.email)
         .then(user => {
             if (!user) {
-                return res.status(401).json("No user found")
+                return res.status(403).json("Invalid email")
             }
             bcrypt.compare(req.body.password, user.password)
             .then(match => {
                 if (!match) {
-                    return res.status(401).json("Invalid password")
+                    return res.status(403).json("Invalid password")
                 }
                 const options = { expiresIn: 3600 };
                 const payload = { id: user.id };
@@ -54,7 +54,7 @@ module.exports = {
             .then(hashedPassword => {
                 newUser.password = hashedPassword
                 userRepository.create(newUser)
-                .then(user => res.json(user))
+                .then(user => res.status(201).json(user))
                 .catch(err => console.log(err))
             })
             .catch(err => console.log(err))

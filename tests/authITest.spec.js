@@ -13,7 +13,7 @@ chai.use(chaiHttp);
 
 describe("Auth", () => {
   before(done => {
-    User.remove({}, done);
+    User.deleteMany({}, done);
   });
 
   before(done => {
@@ -22,8 +22,8 @@ describe("Auth", () => {
       .then(() => done());
   });
 
-  describe("auth/login", () => {
-    it("should return a 200 response if the user is logged in", done => {
+  describe("POST auth/login", () => {
+    it("should return a 200 response if the user successfully logs in", done => {
       chai
         .request(server)
         .post("/api/auth/login")
@@ -34,33 +34,33 @@ describe("Auth", () => {
         });
     });
 
-    it("should return a 401 response and No User found error if unknown username used", done => {
+    it("should return a 403 response and Invalid email if unknown email used", done => {
       chai
         .request(server)
         .post("/api/auth/login")
         .send({ email: "invalid@test.com", password: "pass1" })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
-          expect(res.body).to.equal("No user found");
+          expect(res.status).to.equal(403);
+          expect(res.body).to.equal("Invalid email");
           done();
         });
     });
 
-    it("should return a 401 response and Invalid password if the password is invalid", done => {
+    it("should return a 403 response and Invalid password if the password is invalid", done => {
       chai
         .request(server)
         .post("/api/auth/login")
         .send({ email: "user@test.com", password: "wrongPassword" })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
+          expect(res.status).to.equal(403);
           expect(res.body).to.equal("Invalid password");
           done();
         });
     });
   });
 
-  describe("auth/register", () => {
-    it("should create a new user in the database with a hashed password", done => {
+  describe("POST auth/register", () => {
+    it("should return a 201 response and create a new user in the database with a hashed password", done => {
       const newUser = new User({
         username: "testRegister",
         email: "test@register.com",
@@ -71,7 +71,7 @@ describe("Auth", () => {
         .post("/api/auth/register")
         .send(newUser)
         .end((err, res) => {
-          expect(res.status).to.equal(200);
+          expect(res.status).to.equal(201);
           expect(res.body.username).to.equal("testRegister");
           userRepository.findByEmail("test@register.com").then(user => {
             expect(res.body.password).to.equal(user.password);
