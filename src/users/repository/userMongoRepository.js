@@ -1,4 +1,4 @@
-const User = require('./User');
+const User = require('../User');
 
 module.exports = {
     findById: id => User.findOne({ _id: id }),

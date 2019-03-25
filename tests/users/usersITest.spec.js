@@ -1,10 +1,10 @@
 process.env.PORT = 5005;
 process.env.DB_DSN =
-  "mongodb://test_user:test123@ds233763.mlab.com:33763/mathlab_test";
+  "mongodb://127.0.0.1:27017/test_users" // $ mongo test_users --host 127.0.0.1 --port 27017
 
-const server = require("../server");
+const server = require("../../src/server");
 const testHelpers = require("./testHelpers");
-const User = require("../users/User");
+const User = require("../../src/users/User");
 const bcrypt = require("bcryptjs");
 const chai = require("chai");
 const chaiHttp = require("chai-http");

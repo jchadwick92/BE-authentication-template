@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authService = require('./authService');
+const authService = require('../service/authService');
 
 router.get('/', (req, res) => {
     res.send('You just hit the auth page\n')

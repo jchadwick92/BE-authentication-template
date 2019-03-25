@@ -1,4 +1,4 @@
-const userRepository = require('./userMongoRepository');
+const userRepository = require('../repository/userMongoRepository');
 const bcrypt = require('bcryptjs');
 
 module.exports = {

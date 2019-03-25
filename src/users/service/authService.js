@@ -1,9 +1,9 @@
-const validateRegisterInput = require('../validation/register');
-const validateLoginInput = require('../validation/login');
-const userRepository = require('../users/userMongoRepository');
+const validateRegisterInput = require('../../validation/register');
+const validateLoginInput = require('../../validation/login');
+const userRepository = require('../repository/userMongoRepository');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const secretOrKey = require('../config/settings').secretOrKey;
+const secretOrKey = require('../../config/settings').secretOrKey;
 
 module.exports = {
     login: (req, res) => {

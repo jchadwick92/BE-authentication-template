@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const userService = require('./usersService');
+const userService = require('../service/usersService');
 
 router.get("/me", (req, res) => userService.findByLoggedInUser(req, res));
 
