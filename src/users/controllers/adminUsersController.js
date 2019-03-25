@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const userService = require('../service/adminUsersService');
+const userService = require('../services/adminUsersService');
 const isAdmin = require('../../middleware/isAdmin')
 
 router.get('/', isAdmin, (req, res) => userService.findAll(req, res));

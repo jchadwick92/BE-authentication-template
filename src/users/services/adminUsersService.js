@@ -1,4 +1,4 @@
-const userRepository = require("../repository/userMongoRepository");
+const userRepository = require("../repositories/userMongoRepository");
 
 module.exports = {
   findAll: (req, res) => {

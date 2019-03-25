@@ -21,16 +21,16 @@ app.get('/', (req, res) => {
     res.send('You just hit the home page\n')
 })
 
-const auth = require('./users/controller/authController');
+const auth = require('./users/controllers/authController');
 app.use('/api/auth', auth);
 
 // authenticate all routes
 app.use(passport.authenticate('jwt', {session: false}))
 
-const users = require('./users/controller/usersController');
+const users = require('./users/controllers/usersController');
 app.use('/api/users', users);
 
-const adminUsers = require('./users/controller/adminUsersController');
+const adminUsers = require('./users/controllers/adminUsersController');
 app.use('/api/admin/users', adminUsers);
 
 const port = process.env.PORT || 5001;

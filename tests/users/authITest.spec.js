@@ -4,7 +4,7 @@ process.env.DB_DSN =
 
 const server = require("../../src/server");
 const User = require("../../src/users/User");
-const userRepository = require("../../src/users/repository/userMongoRepository");
+const userRepository = require("../../src/users/repositories/userMongoRepository");
 const testHelpers = require('./testHelpers')
 const chai = require("chai");
 const chaiHttp = require("chai-http");
