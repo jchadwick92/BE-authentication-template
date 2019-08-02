@@ -10,4 +10,6 @@ router.post('/login', (req, res) => authService.login(req, res));
 
 router.post('/register', (req, res) => authService.register(req, res));
 
+router.post('/checkEmailUnique', (req, res) => authService.checkEmailUnique(req, res));
+
 module.exports = router;

@@ -26,7 +26,8 @@ module.exports = {
                 jwt.sign(payload, secretOrKey, options, (err, token) => {
                     res.json({
                         message: "Authentication successful",
-                        token: token
+                        token: token,
+                        user: user
                       })
                 })
             })
@@ -60,5 +61,15 @@ module.exports = {
             .catch(err => console.log(err))
         })
         .catch(err => console.log(err))
+    },
+
+    checkEmailUnique: (req, res) => {
+        userRepository.findByEmail(req.body.email)
+        .then(user => {
+            if(!user) {
+                return res.json({emailNotTaken: true});
+            }
+            return res.json({emailNotTaken: false});
+        })
     }
 };
